@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add New Beat</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col items-center py-10">
+
+  <div class="bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-lg">
+    <h1 class="text-2xl font-bold mb-6 text-center">Add New Beat</h1>
+
+    <form id="beatForm" class="space-y-4">
+      <div>
+        <label class="block text-sm mb-1">Title</label>
+        <input type="text" id="title" required class="w-full p-2 rounded bg-gray-700">
+      </div>
+
+      <div>
+        <label class="block text-sm mb-1">Genre</label>
+        <input type="text" id="genre" required class="w-full p-2 rounded bg-gray-700">
+      </div>
+
+      <div>
+        <label class="block text-sm mb-1">Category</label>
+        <select id="category" required class="w-full p-2 rounded bg-gray-700">
+          <option value="">-- Select Category --</option>
+        <option class="text-green-400 pl-2 py-2 cursor-pointer flex items-center" value="Afrobeats">🎵 Afrobeats</option>
+        <option class="text-green-400 pl-2 py-2 cursor-pointer flex items-center" value="Hip Hop">🎤 Hip Hop</option>
+        <option class="text-green-400 pl-2 py-2 cursor-pointer flex items-center" value="Trap">🔊 Trap</option>
+        <option class="text-green-400 pl-2 py-2 cursor-pointer flex items-center" value="R&B">💖 R&amp;B</option>
+        <option class="text-green-400 pl-2 py-2 cursor-pointer flex items-center" value="Dancehall">🔥 Dancehall</option>
+        <option class="text-green-400 pl-2 py-2 cursor-pointer flex items-center" value="Gospel">🙏 Gospel</option>
+        <option class="text-green-400 pl-2 py-2 cursor-pointer flex items-center" value="Instrumental">🎹 Instrumental</option>
+        <option class="text-green-400 pl-2 py-2 cursor-pointer flex items-center" value="Others">✨ Others</option>
+        <style>
+            select#category option {
+                color: #34d399; /* Tailwind green-400 */
+                padding-left: 0.5rem;
+                padding-top: 0.5rem;
+                padding-bottom: 0.5rem;
+                cursor: pointer;
+            }
+            select#category option:hover {
+                background-color: #f3f4f6; /* Tailwind gray-100 */
+                color: #065f46; /* Tailwind green-800 for contrast */
+            }
+        </style>
+        </select>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm mb-1">BPM</label>
+          <input type="number" id="bpm" required class="w-full p-2 rounded bg-gray-700">
+        </div>
+        <div>
+          <label class="block text-sm mb-1">Duration</label>
+          <input type="text" id="duration" placeholder="e.g. 3:20" required class="w-full p-2 rounded bg-gray-700">
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm mb-1">Cover Image URL (Dropbox)</label>
+        <input type="url" id="cover" required placeholder="https://..." class="w-full p-2 rounded bg-gray-700">
+        <button type="button" id="previewCoverBtn" class="mt-2 text-sm text-blue-400 hover:text-blue-500">Preview Cover 🖼️</button>
+        <img id="coverPreview" class="mt-2 w-32 h-32 object-cover rounded hidden">
+      </div>
+
+      <div>
+        <label class="block text-sm mb-1">Beat File URL (Dropbox)</label>
+        <input type="url" id="url" required placeholder="https://..." class="w-full p-2 rounded bg-gray-700">
+        <button type="button" id="previewAudioBtn" class="mt-2 text-sm text-green-400 hover:text-green-500">Preview Audio 🎧</button>
+        <audio id="audioPreview" controls class="mt-2 w-full hidden"></audio>
+      </div>
+
+      <button type="submit" class="w-full bg-green-600 hover:bg-green-700 py-2 rounded font-bold">Add Beat</button>
+    </form>
+  </div>
+
+  <div id="message" class="mt-6 text-center"></div>
+
+  <div id="beatsList" class="mt-8 w-full max-w-3xl hidden">
+    <h2 class="text-xl font-semibold mb-4 text-center">Added Beats</h2>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm text-gray-300">
+        <thead class="bg-gray-700 text-white">
+          <tr>
+            <th class="px-3 py-2">Title</th>
+            <th class="px-3 py-2">Genre</th>
+            <th class="px-3 py-2">Category</th>
+            <th class="px-3 py-2">BPM</th>
+            <th class="px-3 py-2">Duration</th>
+          </tr>
+        </thead>
+        <tbody id="beatsTableBody" class="divide-y divide-gray-700"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <button id="downloadJson"
+    class="mt-6 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded hidden">
+    Download Updated beats.json
+  </button>
+
+  <script>
+    let beats = [];
+
+    // Load existing beats.json
+    fetch('../data/beats.json')
+      .then(res => res.json())
+      .then(data => beats = data)
+      .catch(() => {
+        beats = [];
+        console.warn('No beats.json found; starting fresh.');
+      });
+
+    const form = document.getElementById('beatForm');
+    const msg = document.getElementById('message');
+    const downloadBtn = document.getElementById('downloadJson');
+    const beatsList = document.getElementById('beatsList');
+    const beatsTableBody = document.getElementById('beatsTableBody');
+
+    // Preview elements
+    const audioPreview = document.getElementById('audioPreview');
+    const coverPreview = document.getElementById('coverPreview');
+
+    document.getElementById('previewAudioBtn').addEventListener('click', () => {
+      const url = document.getElementById('url').value.trim();
+      if (!url) return alert('Enter a Dropbox audio link first.');
+      const fixedUrl = convertDropboxLink(url);
+      audioPreview.src = fixedUrl;
+      audioPreview.classList.remove('hidden');
+      audioPreview.play().catch(() => {});
+    });
+
+    document.getElementById('previewCoverBtn').addEventListener('click', () => {
+      const url = document.getElementById('cover').value.trim();
+      if (!url) return alert('Enter a Dropbox image link first.');
+      const fixedUrl = convertDropboxLink(url);
+      coverPreview.src = fixedUrl;
+      coverPreview.classList.remove('hidden');
+    });
+
+    // Convert Dropbox share link to direct raw link
+    function convertDropboxLink(link) {
+      return link.replace("?dl=0", "?raw=1").replace("?dl=1", "?raw=1");
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+
+      const newBeat = {
+        title: document.getElementById('title').value.trim(),
+        genre: document.getElementById('genre').value.trim(),
+        category: document.getElementById('category').value.trim(),
+        bpm: document.getElementById('bpm').value.trim(),
+        duration: document.getElementById('duration').value.trim(),
+        cover: convertDropboxLink(document.getElementById('cover').value.trim()),
+        url: convertDropboxLink(document.getElementById('url').value.trim())
+      };
+
+      beats.push(newBeat);
+      updateBeatsTable();
+
+      msg.innerHTML = `<p class="text-green-400 font-semibold mt-4">✅ Beat added locally! Click below to download updated <b>beats.json</b>.</p>`;
+      downloadBtn.classList.remove('hidden');
+      beatsList.classList.remove('hidden');
+
+      // Reset form
+      form.reset();
+      audioPreview.classList.add('hidden');
+      coverPreview.classList.add('hidden');
+    });
+
+    function updateBeatsTable() {
+      beatsTableBody.innerHTML = '';
+      beats.forEach((beat, i) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="px-3 py-2">${beat.title}</td>
+          <td class="px-3 py-2">${beat.genre}</td>
+          <td class="px-3 py-2">${beat.category || '-'}</td>
+          <td class="px-3 py-2">${beat.bpm}</td>
+          <td class="px-3 py-2">${beat.duration}</td>
+        `;
+        beatsTableBody.appendChild(row);
+      });
+    }
+
+    downloadBtn.addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(beats, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'beats.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+
+</body>
+</html>

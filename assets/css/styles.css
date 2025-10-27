@@ -1,0 +1,75 @@
+.custom-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+#playPauseBtn {
+  width: 30px; /* Set a specific width */
+  height: 30px; /* Set the same height as the width */
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  
+  align-items: center;
+}
+
+#progressBar {
+  width: 200px;
+  height: 3px;
+}
+
+#volumeControl {
+  width: 100px;
+  height: 3px;
+}
+
+/* Hide the default audio element if desired */
+#cPlayer {
+  display: none;
+}
+
+/* --- Modern Scrollbar Styling --- */
+
+/* Applies to the horizontal scroll containers */
+#beatList::-webkit-scrollbar,
+.hide-scrollbar::-webkit-scrollbar {
+  height: 6px; /* thin scrollbar */
+  background: transparent;
+}
+
+#beatList::-webkit-scrollbar-thumb,
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #22c55e, #3b82f6);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+#beatList::-webkit-scrollbar-thumb:hover,
+.hide-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #16a34a, #2563eb);
+  box-shadow: 0 0 6px #22c55e88;
+}
+
+#beatList::-webkit-scrollbar-track,
+.hide-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Firefox */
+#beatList {
+  scrollbar-color: #22c55e transparent;
+  scrollbar-width: thin;
+}
+
+/* --- Optional: Hide until hover --- */
+#beatList::-webkit-scrollbar {
+  opacity: 0;
+}
+#beatList:hover::-webkit-scrollbar {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
