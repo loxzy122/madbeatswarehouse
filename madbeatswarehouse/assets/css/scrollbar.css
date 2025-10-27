@@ -1,0 +1,98 @@
+/* --- Modern Scrollbar Styling --- */
+
+/* Applies to the horizontal scroll containers */
+#beatList::-webkit-scrollbar,
+.hide-scrollbar::-webkit-scrollbar {
+  height: 6px; /* thin scrollbar */
+  background: transparent;
+}
+
+#beatList::-webkit-scrollbar-thumb,
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #22c55e, #3b82f6);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+#beatList::-webkit-scrollbar-thumb:hover,
+.hide-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #16a34a, #2563eb);
+  box-shadow: 0 0 6px #22c55e88;
+}
+
+#beatList::-webkit-scrollbar-track,
+.hide-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Firefox */
+#beatList {
+  scrollbar-color: #22c55e transparent;
+  scrollbar-width: thin;
+}
+
+/* --- Optional: Hide until hover --- */
+#beatList::-webkit-scrollbar {
+  opacity: 0;
+}
+#beatList:hover::-webkit-scrollbar {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Smooth, modern horizontal scrollbars */
+.scrollbar-modern::-webkit-scrollbar {
+  height: 6px;
+}
+.scrollbar-modern::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #22c55e, #3b82f6);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+.scrollbar-modern::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #16a34a, #2563eb);
+  box-shadow: 0 0 6px #22c55e88;
+}
+.scrollbar-modern::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Hide scrollbar until hover */
+.scrollbar-modern::-webkit-scrollbar {
+  opacity: 0;
+}
+.scrollbar-modern:hover::-webkit-scrollbar {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Firefox support */
+.scrollbar-modern {
+  scrollbar-color: #22c55e transparent;
+  scrollbar-width: thin;
+}
+
+/* Scroll progress indicator base */
+#scrollIndicator {
+  transition: width 0.2s linear;
+}
+
+/* Highlight + Shake animation */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+
+.highlight-shake {
+  animation: shake 0.4s ease;
+  box-shadow: 0 0 10px #22c55eaa;
+  border-color: #22c55e;
+}
+
+
+img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  pointer-events: auto;
+}
